@@ -39,14 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',  # Ensure CORS is still enabled
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Add this line
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -55,13 +55,9 @@ MIDDLEWARE = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-INSTALLED_APPS += ["corsheaders"]
-MIDDLEWARE.insert(1, "corsheaders.middleware.CorsMiddleware")
-
 CORS_ALLOWED_ORIGINS = [
     "https://disk-modeling.vercel.app",  # Frontend URL
 ]
-
 
 ROOT_URLCONF = 'image.urls'
 
