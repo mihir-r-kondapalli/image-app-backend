@@ -56,7 +56,7 @@ MIDDLEWARE = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 CORS_ALLOWED_ORIGINS = [
-    "https://disk-modeling.vercel.app",  # Frontend URL
+    "https://scattered-light-disks.vercel.app/",  # Frontend URL
 ]
 
 ROOT_URLCONF = 'image.urls'
