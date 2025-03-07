@@ -1,95 +1,96 @@
-appnope==0.1.4
-asgiref==3.8.1
-astropy==7.0.0
-astropy-iers-data==0.2025.3.3.0.34.45
+appnope @ file:///home/conda/feedstock_root/build_artifacts/appnope_1733332318622/work
+asgiref @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/asgiref_1728596011874/work
+astropy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a0fm0x2tco/croot/astropy_1738094414286/work
+astropy-iers-data @ file:///home/conda/feedstock_root/build_artifacts/astropy-iers-data_1740987795025/work
 astroquery==0.4.9.post1
-asttokens==3.0.0
+asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1733250440834/work
 beautifulsoup4==4.13.3
-Brotli==1.0.9
+Brotli @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_f7i0oxypt6/croot/brotli-split_1736182464088/work
 certifi==2025.1.31
 charset-normalizer==3.4.1
-comm==0.2.2
-contourpy==1.3.1
-cycler==0.11.0
-debugpy==1.8.11
-decorator==5.2.1
+comm @ file:///home/conda/feedstock_root/build_artifacts/comm_1733502965406/work
+contourpy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_2cvjf0v4ux/croot/contourpy_1732540055997/work
+cycler @ file:///tmp/build/80754af9/cycler_1637851556182/work
+debugpy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_6a37he2v_t/croot/debugpy_1736267437603/work
+decorator @ file:///home/conda/feedstock_root/build_artifacts/decorator_1740384970518/work
 Django==5.1.6
 django-cors-headers==4.7.0
 djangorestframework==3.15.2
 et_xmlfile==2.0.0
-exceptiongroup==1.2.2
-executing==2.1.0
-fonttools==4.55.3
+exceptiongroup @ file:///home/conda/feedstock_root/build_artifacts/exceptiongroup_1733208806608/work
+executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1733569351617/work
+fonttools @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_ce1jt_55vl/croot/fonttools_1737039388732/work
+gunicorn==23.0.0
 html5lib==1.1
 idna==3.10
-importlib_metadata==8.6.1
-ipykernel==6.29.5
-ipython==9.0.0
-ipython_pygments_lexers==1.1.1
+importlib_metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1737420181517/work
+ipykernel @ file:///Users/runner/miniforge3/conda-bld/ipykernel_1719845458456/work
+ipython @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_ipython_1740855545/work
+ipython_pygments_lexers @ file:///home/conda/feedstock_root/build_artifacts/ipython_pygments_lexers_1737123620466/work
 jaraco.classes==3.4.0
 jaraco.context==6.0.1
 jaraco.functools==4.1.0
-jax==0.4.35
-jaxlib==0.4.35
-jedi==0.19.2
-joblib==1.4.2
-jupyter_client==8.6.3
-jupyter_core==5.7.2
+jax @ file:///Users/builder/cbouss/buildout/croot/jax_1735854317972/work
+jaxlib @ file:///Users/builder/cbouss/buildout/croot/jaxlib_1735845837483/work/dist/jaxlib-0.4.35-cp313-cp313-macosx_11_0_arm64.whl#sha256=4462763bd6e5502735afa30a105561284a56d1df3725a91910946b0f12f62562
+jedi @ file:///home/conda/feedstock_root/build_artifacts/jedi_1733300866624/work
+joblib @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/joblib_1728589613021/work
+jupyter_client @ file:///home/conda/feedstock_root/build_artifacts/jupyter_client_1733440914442/work
+jupyter_core @ file:///home/conda/feedstock_root/build_artifacts/jupyter_core_1727163409502/work
 jwxml==0.3.2
 keyring==25.6.0
-kiwisolver==1.4.8
+kiwisolver @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_cc2l_z_0ri/croot/kiwisolver_1737039586949/work
 lxml==5.3.1
 matplotlib==3.10.0
-matplotlib-inline==0.1.7
-ml_dtypes==0.5.0
+matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1733416936468/work
+ml_dtypes @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_41x4jlyplt/croot/ml_dtypes_1734018905378/work
 more-itertools==10.6.0
-nest_asyncio==1.6.0
+nest_asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1733325553580/work
 numexpr==2.10.2
-numpy==2.2.2
+numpy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_2bgq2wg6lu/croot/numpy_and_numpy_base_1738078509889/work/dist/numpy-2.2.2-cp313-cp313-macosx_11_0_arm64.whl#sha256=a7758b7132f833d3337b3ca434305ea8c009b92bf911cd866cef76aa80ebb8a0
 openpyxl==3.1.5
-opt-einsum==3.3.0
-packaging==24.2
-parso==0.8.4
-pathlib==1.0.1
-pexpect==4.9.0
+opt-einsum @ file:///tmp/build/80754af9/opt_einsum_1621500238896/work
+packaging @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_a6_qk3qyg7/croot/packaging_1734472142254/work
+parso @ file:///home/conda/feedstock_root/build_artifacts/parso_1733271261340/work
+pathlib @ file:///Users/ktietz/demo/mc3/conda-bld/pathlib_1629713961906/work
+pexpect @ file:///home/conda/feedstock_root/build_artifacts/pexpect_1733301927746/work
 photutils==2.2.0
-pickleshare==0.7.5
-pillow==11.1.0
-pip==25.0
-platformdirs==4.3.6
+pickleshare @ file:///home/conda/feedstock_root/build_artifacts/pickleshare_1733327343728/work
+pillow @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_85xj2lenf1/croot/pillow_1738010251686/work
+platformdirs @ file:///home/conda/feedstock_root/build_artifacts/platformdirs_1733232627818/work
 poppy==1.1.2
-prompt_toolkit==3.0.50
-psutil==7.0.0
-psycopg2==2.9.9
-ptyprocess==0.7.0
-pure_eval==0.2.3
-pyerfa==2.0.1.5
-Pygments==2.19.1
-pyparsing==3.2.0
+prompt_toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1737453357274/work
+psutil @ file:///Users/runner/miniforge3/conda-bld/psutil_1740663164037/work
+psycopg2 @ file:///Users/runner/miniforge3/conda-bld/psycopg2-split_1727892711571/work
+ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_1733302279685/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl#sha256=92c32ff62b5fd8cf325bec5ab90d7be3d2a8ca8c8a3813ff487a8d2002630d1f
+pure_eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1733569405015/work
+pyerfa @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_32yar1dp0d/croot/pyerfa_1738082795115/work
+Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1736243443484/work
+pyparsing @ file:///Users/builder/cbouss/buildout/croot/pyparsing_1735850351026/work
 pysiaf==0.24.1
-python-dateutil==2.9.0.post0
-pytz==2024.1
+python-dateutil @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/python-dateutil_1728585579455/work
+pytz @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/pytz_1728586101417/work
 pyvo==1.6.1
-PyYAML==6.0.2
-pyzmq==26.2.0
+PyYAML @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_e8m1aayrqt/croot/pyyaml_1731006115055/work
+pyzmq @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_95lsut8ymz/croot/pyzmq_1734709560733/work
 requests==2.32.3
-scipy==1.15.1
+scipy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_4c2xem2hut/croot/scipy_1737122914559/work/dist/scipy-1.15.1-cp313-cp313-macosx_11_0_arm64.whl#sha256=2adbb89ee8674c35ca4340464cf1e0513b1d490d3f1061403ef247bb97246b6b
 setuptools==72.1.0
-six==1.16.0
+six @ file:///tmp/build/80754af9/six_1644875935023/work
 soupsieve==2.6
-sqlparse==0.5.2
-stack_data==0.6.3
+sqlparse @ file:///Users/builder/cbouss/buildout/croot/sqlparse_1739487468098/work
+stack_data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1733569443808/work
 stpsf==2.0.0
-stsynphot==1.4.0
-synphot==1.5.0
-tornado==6.4.2
+stsynphot @ file:///Users/runner/miniforge3/conda-bld/stsynphot_1733756742200/work
+synphot @ file:///Users/runner/miniforge3/conda-bld/synphot_1738261615291/work
+tornado @ file:///Users/builder/cbouss/buildout/croot/tornado_1735843024083/work
 tqdm==4.67.1
-traitlets==5.14.3
-typing_extensions==4.12.2
+traitlets @ file:///home/conda/feedstock_root/build_artifacts/traitlets_1733367359838/work
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1733188668063/work
 urllib3==2.3.0
-wcwidth==0.2.13
+wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1733231326287/work
 webbpsf==1.5.0
 webbpsf-ext==1.2.3
 webencodings==0.5.1
 wheel==0.45.1
-zipp==3.21.0
+whitenoise==6.9.0
+zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1732827521216/work
