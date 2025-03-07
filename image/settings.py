@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-e$ym@#@+=%#11e1w#%#tvmdptjj%##wjyt*limo#7vb-z49h@g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["your-backend-domain.com"]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
 
 # Application definition
@@ -54,9 +55,13 @@ MIDDLEWARE = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+INSTALLED_APPS += ["corsheaders"]
+MIDDLEWARE.insert(1, "corsheaders.middleware.CorsMiddleware")
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React frontend
+    "https://disk-modeling.vercel.app",  # Frontend URL
 ]
+
 
 ROOT_URLCONF = 'image.urls'
 
