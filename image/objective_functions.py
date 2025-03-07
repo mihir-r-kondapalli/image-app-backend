@@ -1,5 +1,5 @@
-import jax
-import jax.numpy as jnp
+import numpy as np
+import scipy
 from functools import partial
 
 class Parameter_Index:
@@ -22,10 +22,8 @@ def pack_pars(p_dict, orig_dict):
     p_arrs = []
     for name in orig_dict.keys():
         p_arrs.append(p_dict[name])
-    return jnp.asarray(p_arrs)
+    return np.asarray(p_arrs)
 
-
-@partial(jax.jit, static_argnames=['DiskModel', 'DistrModel', 'FuncModel', 'PSFModel', 'nx', 'ny', 'halfNbSlices'])
 def jax_model(DiskModel, DistrModel, FuncModel, PSFModel, disk_params, spf_params, psf_params, distance = 0., pxInArcsec = 0.,
               nx = 140, ny = 140, halfNbSlices = 25, flux_scaling = 1e6):
 
@@ -38,28 +36,28 @@ def jax_model(DiskModel, DistrModel, FuncModel, PSFModel, disk_params, spf_param
                                               omega = disk_params[15], pxInArcsec=pxInArcsec)
 
     yc, xc = ny, nx
-    xc = jnp.where(nx%2==1, nx/2-0.5, nx/2).astype(int)
-    yc = jnp.where(ny%2==1, ny/2-0.5, ny/2).astype(int)
+    xc = np.where(nx%2==1, nx/2-0.5, nx/2).astype(int)
+    yc = np.where(ny%2==1, ny/2-0.5, ny/2).astype(int)
 
-    x_vector = (jnp.arange(0, nx) - xc)*pxInArcsec*distance
-    y_vector = (jnp.arange(0, ny) - yc)*pxInArcsec*distance
+    x_vector = (np.arange(0, nx) - xc)*pxInArcsec*distance
+    y_vector = (np.arange(0, ny) - yc)*pxInArcsec*distance
 
-    scattered_light_map = jnp.zeros((ny, nx))
-    image = jnp.zeros((ny, nx))
+    scattered_light_map = np.zeros((ny, nx))
+    image = np.zeros((ny, nx))
 
-    limage = jnp.zeros([2*halfNbSlices-1, ny, nx])
-    tmp = jnp.arange(0, halfNbSlices)
+    limage = np.zeros([2*halfNbSlices-1, ny, nx])
+    tmp = np.arange(0, halfNbSlices)
     
     scattered_light_image = DiskModel.compute_scattered_light_jax(disk_params_jax, distr_params, DistrModel, spf_params, FuncModel,
                                                                   x_vector, y_vector, scattered_light_map, image, limage, tmp,
                                                                   halfNbSlices)
     
     dims = scattered_light_image.shape
-    x, y = jnp.meshgrid(jnp.arange(dims[1], dtype=jnp.float32), jnp.arange(dims[0], dtype=jnp.float32))
+    x, y = np.meshgrid(np.arange(dims[1], dtype=np.float32), np.arange(dims[0], dtype=np.float32))
     x = x - disk_params[12] + xc
     y = y - disk_params[13] + yc
-    scattered_light_image = jax.scipy.ndimage.map_coordinates(jnp.copy(scattered_light_image),
-                                                            jnp.array([y, x]),order=1,cval = 0.)
+    scattered_light_image = scipy.ndimage.map_coordinates(np.copy(scattered_light_image),
+                                                            np.array([y, x]),order=1,cval = 0.)
 
     if PSFModel != None:
         scattered_light_image = PSFModel.generate(scattered_light_image, psf_params)
@@ -94,19 +92,18 @@ def objective_ll(disk_params, spf_params, psf_params, misc_params,
         disk_params, spf_params, psf_params, misc_params, DiskModel, DistrModel, FuncModel, PSFModel
     )
 
-    sigma2 = jnp.power(err_map, 2)
-    result = jnp.power((target_image - model_image), 2) / sigma2 + jnp.log(sigma2)
-    result = jnp.where(jnp.isnan(result), 0, result)
+    sigma2 = np.power(err_map, 2)
+    result = np.power((target_image - model_image), 2) / sigma2 + np.log(sigma2)
+    result = np.where(np.isnan(result), 0, result)
 
-    return -0.5 * jnp.sum(result)  # / jnp.size(target_image)
+    return -0.5 * np.sum(result)  # / jnp.size(target_image)
 
-@jax.jit
 def log_likelihood(image, target_image, err_map):
-    sigma2 = jnp.power(err_map, 2)
-    result = jnp.power((target_image - image), 2) / sigma2 + jnp.log(sigma2)
-    result = jnp.where(jnp.isnan(result), 0, result)
+    sigma2 = np.power(err_map, 2)
+    result = np.power((target_image - image), 2) / sigma2 + np.log(sigma2)
+    result = np.where(np.isnan(result), 0, result)
 
-    return -0.5 * jnp.sum(result)  # / jnp.size(target_image)
+    return -0.5 * np.sum(result)  # / jnp.size(target_image)
 
 
 def objective_fit(params_fit, fit_keys, disk_params, spf_params, psf_params, misc_params,
@@ -157,8 +154,8 @@ def objective_fit(params_fit, fit_keys, disk_params, spf_params, psf_params, mis
             flux_scaling=misc_params['flux_scaling']
         )
 
-    sigma2 = jnp.power(err_map, 2)
-    result = jnp.power((target_image - model_image), 2) / sigma2 + jnp.log(sigma2)
-    result = jnp.where(jnp.isnan(result), 0, result)
+    sigma2 = np.power(err_map, 2)
+    result = np.power((target_image - model_image), 2) / sigma2 + np.log(sigma2)
+    result = np.where(np.isnan(result), 0, result)
 
-    return -0.5 * jnp.sum(result)  # / jnp.size(target_image)
+    return -0.5 * np.sum(result)  # / jnp.size(target_image)

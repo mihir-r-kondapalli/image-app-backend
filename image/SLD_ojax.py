@@ -16,10 +16,9 @@ __all__ = ['ScatteredLightDisk',
            'Dust_distribution',
            'Phase_function']
 
-import jax
-import jax.numpy as jnp
+import numpy as np
 from functools import partial
-from .SLD_utils import *
+from .new_SLD_utils import *
 
 
 class ScatteredLightDisk(Jax_class):
@@ -45,7 +44,6 @@ class ScatteredLightDisk(Jax_class):
     }
 
     @classmethod
-    @partial(jax.jit, static_argnums=(0,))
     def init(cls, distr_params, inc, pa, ain, aout, sma, nx=200, ny=200, distance=50., omega=0., pxInArcsec=0.01225, xdo=0., ydo=0.):
 
         p_dict = {}
@@ -61,26 +59,25 @@ class ScatteredLightDisk(Jax_class):
         p_dict["xdo"] = xdo
         # disk offset along the y-axis in the disk frame (semi-minor axis), AU
         p_dict["ydo"] = ydo
-        p_dict["rmin"] = jnp.sqrt(p_dict["xdo"]**2+p_dict["ydo"]**2)+p_dict["pxInAU"]
+        p_dict["rmin"] = np.sqrt(p_dict["xdo"]**2+p_dict["ydo"]**2)+p_dict["pxInAU"]
         # star center along the y- and x-axis, in pixels
 
         p_dict["itilt"] = inc  # inclination wrt the line of sight in deg
-        p_dict["cosi"] = jnp.cos(jnp.deg2rad(p_dict["itilt"]))
-        p_dict["sini"] = jnp.sin(jnp.deg2rad(p_dict["itilt"]))
+        p_dict["cosi"] = np.cos(np.deg2rad(p_dict["itilt"]))
+        p_dict["sini"] = np.sin(np.deg2rad(p_dict["itilt"]))
 
         p_dict["pa"] = pa    # position angle of the disc in degrees
-        p_dict["cospa"] = jnp.cos(jnp.deg2rad(pa))
-        p_dict["sinpa"] = jnp.sin(jnp.deg2rad(pa))
+        p_dict["cospa"] = np.cos(np.deg2rad(pa))
+        p_dict["sinpa"] = np.sin(np.deg2rad(pa))
 
-        p_dict["itilt"] = jnp.where(jnp.abs(jnp.mod(p_dict["itilt"], 180)-90) < jnp.abs(
-                jnp.mod(distr_params[16], 180)-90),
+        p_dict["itilt"] = np.where(np.abs(np.mod(p_dict["itilt"], 180)-90) < np.abs(
+                np.mod(distr_params[16], 180)-90),
                 distr_params[16], p_dict["itilt"])
         
         return cls.pack_pars(p_dict)
         
 
     @classmethod
-    @partial(jax.jit, static_argnums=(0, 3, 5, 12))
     def compute_scattered_light_jax(cls, disk_params, distr_params, distr_cls, phase_func_params,
                                     phase_func_cls, x_vector, y_vector, scattered_light_map,
                                     image, limage, tmp, halfNbSlices):
@@ -100,21 +97,21 @@ class ScatteredLightDisk(Jax_class):
         #x_vector = (jnp.arange(0, disk["nx"]) - disk["xc"])*disk["pxInAU"]  # x axis in au
         #y_vector = (jnp.arange(0, disk["ny"]) - disk["yc"])*disk["pxInAU"]  # y axis in au
         
-        x_map_0PA, y_map_0PA = jnp.meshgrid(x_vector, y_vector)
+        x_map_0PA, y_map_0PA = np.meshgrid(x_vector, y_vector)
         # rotation to get the disk major axis properly oriented, x in AU
         y_map = (disk["cospa"]*x_map_0PA + disk["sinpa"]*y_map_0PA)
         # rotation to get the disk major axis properly oriented, y in AU
         x_map = (-disk["sinpa"]*x_map_0PA + disk["cospa"]*y_map_0PA)
 
         # dist along the line of sight to reach the disk midplane (z_D=0), AU:
-        lz0_map = y_map * jnp.tan(jnp.deg2rad(disk["itilt"]))
+        lz0_map = y_map * np.tan(np.deg2rad(disk["itilt"]))
         # dist to reach +zmax, AU:
         lzp_map = distr["zmax"]/disk["cosi"] + \
             lz0_map
         # dist to reach -zmax, AU:
         lzm_map = -distr["zmax"]/disk["cosi"] + \
             lz0_map
-        dl_map = jnp.absolute(lzp_map-lzm_map)  # l range, in AU
+        dl_map = np.absolute(lzp_map-lzm_map)  # l range, in AU
         # squared maximum l value to reach the outer disk radius, in AU^2:
         lmax2 = distr["rmax"]**2 - \
             (x_map**2+y_map**2)
@@ -126,16 +123,16 @@ class ScatteredLightDisk(Jax_class):
         # total number of distances
         # along the line of sight
 
-        tmp = (jnp.exp(tmp*jnp.log(lwidth+1.) /
+        tmp = (np.exp(tmp*np.log(lwidth+1.) /
                       (halfNbSlices-1.))-1.)/lwidth  # between 0 and 1
         
-        ll = jnp.concatenate((-tmp[:0:-1], tmp))
+        ll = np.concatenate((-tmp[:0:-1], tmp))
 
         # 1d array pre-calculated values, AU
-        ycs_vector = jnp.where(validPixel_map, disk["cosi"]*y_map, 0)
+        ycs_vector = np.where(validPixel_map, disk["cosi"]*y_map, 0)
         # 1d array pre-calculated values, AU
-        zsn_vector = jnp.where(validPixel_map, -disk["sini"]*y_map, 0)
-        xd_vector = jnp.where(validPixel_map, x_map, 0)  # x_disk, in AU
+        zsn_vector = np.where(validPixel_map, -disk["sini"]*y_map, 0)
+        xd_vector = np.where(validPixel_map, x_map, 0)  # x_disk, in AU
 
         #limage = jnp.zeros([nbSlices, ny, nx])
         #image = jnp.zeros((ny, nx))
@@ -143,7 +140,7 @@ class ScatteredLightDisk(Jax_class):
         for il in range(nbSlices):
             # distance along the line of sight to reach the plane z
 
-            l_vector = jnp.where(validPixel_map, lz0_map + ll[il]*dl_map, 0)
+            l_vector = np.where(validPixel_map, lz0_map + ll[il]*dl_map, 0)
             #l_vector = lz0_map + ll[il]*dl_map
 
             # rotation about x axis
@@ -152,20 +149,20 @@ class ScatteredLightDisk(Jax_class):
             # Dist and polar angles in the frame centered on the star position:
             # squared distance to the star, in AU^2
             d2star_vector = xd_vector**2+yd_vector**2+zd_vector**2
-            dstar_vector = jnp.sqrt(d2star_vector + 1e-8)  # distance to the star, in AU
+            dstar_vector = np.sqrt(d2star_vector + 1e-8)  # distance to the star, in AU
             # midplane distance to the star (r coordinate), in AU
-            rstar_vector = jnp.sqrt(xd_vector**2+yd_vector**2+1e-8)
-            thetastar_vector = jnp.arctan2(yd_vector, xd_vector+1e-8)
+            rstar_vector = np.sqrt(xd_vector**2+yd_vector**2+1e-8)
+            thetastar_vector = np.arctan2(yd_vector, xd_vector+1e-8)
             # Phase angles:
-            cosphi_vector = (rstar_vector*disk["sini"]*jnp.sin(thetastar_vector) +
+            cosphi_vector = (rstar_vector*disk["sini"]*np.sin(thetastar_vector) +
                              zd_vector*disk["cosi"])/(dstar_vector+1e-8)  # in radians
             # Polar coordinates in the disk frame, and semi-major axis:
             # midplane distance to the disk center (r coordinate), in AU
-            r_vector = jnp.sqrt((xd_vector-disk["xdo"])**2+(yd_vector-disk["ydo"])**2+1e-8)
+            r_vector = np.sqrt((xd_vector-disk["xdo"])**2+(yd_vector-disk["ydo"])**2+1e-8)
             # polar angle in radians between 0 and pi
-            theta_vector = jnp.arctan2(yd_vector-disk["ydo"], xd_vector-disk["xdo"]+1e-8)
+            theta_vector = np.arctan2(yd_vector-disk["ydo"], xd_vector-disk["xdo"]+1e-8)
 
-            costheta_vector = jnp.cos(theta_vector-jnp.deg2rad(disk["omega"]))
+            costheta_vector = np.cos(theta_vector-np.deg2rad(disk["omega"]))
             # Scattered light:
             # volume density
             rho_vector = distr_cls.density_cylindrical(distr_params, r_vector,
@@ -173,14 +170,14 @@ class ScatteredLightDisk(Jax_class):
                                                                zd_vector)
             phase_function = phase_func_cls.compute_phase_function_from_cosphi(phase_func_params, cosphi_vector)
             #image = np.ndarray((disk["ny"], disk["nx"]))
-            image = jnp.where(validPixel_map, rho_vector*phase_function/(d2star_vector + 1e-8), 0)
+            image = np.where(validPixel_map, rho_vector*phase_function/(d2star_vector + 1e-8), 0)
             #limage[il, :, :] = image
             limage = limage.at[il,:,:].set(image)
 
         for il in range(1, nbSlices):
             scattered_light_map += (ll[il]-ll[il-1]) * (limage[il-1, :, :] +
                                                              limage[il, :, :])
-        scattered_light_map = jnp.where(validPixel_map, scattered_light_map * dl_map / 2. * disk["pxInAU"]**2, 0)
+        scattered_light_map = np.where(validPixel_map, scattered_light_map * dl_map / 2. * disk["pxInAU"]**2, 0)
 
         #ideally should check for valid pixel map
         #if disk["flux_max"] is not None:

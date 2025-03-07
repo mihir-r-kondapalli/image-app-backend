@@ -10,9 +10,8 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view
 import json
 from matplotlib import cm
-import jax.numpy as jnp
 from .objective_functions import Parameter_Index, objective_model
-from .SLD_utils import DoubleHenyeyGreenstein_SPF, DustEllipticalDistribution2PowerLaws, Winnie_PSF
+from .new_SLD_utils import DoubleHenyeyGreenstein_SPF, DustEllipticalDistribution2PowerLaws, Winnie_PSF
 from .new_SLD_utils import EMP_PSF
 from .SLD_ojax import ScatteredLightDisk
 
@@ -23,15 +22,15 @@ y2 = 4096
 psf_dir = "for_mihir_20241218/F300M/"
 psf_suffixes = "_F300M.npy"
 
-test_parangs = jnp.array([0, 90, 180, 270])
+test_parangs = np.array([0, 90, 180, 270])
 
 #Read in the pre-generated PSFs
-im_mask_rolls = jnp.load(psf_dir+"im_mask_rolls"+psf_suffixes)
-psf_inds_rolls = jnp.load(psf_dir+"psf_inds_rolls"+psf_suffixes)
-psf_offsets = jnp.load(psf_dir+"psf_offsets"+psf_suffixes)
-psfs = jnp.load(psf_dir+"psfs"+psf_suffixes)
+im_mask_rolls = np.load(psf_dir+"im_mask_rolls"+psf_suffixes)
+psf_inds_rolls = np.load(psf_dir+"psf_inds_rolls"+psf_suffixes)
+psf_offsets = np.load(psf_dir+"psf_offsets"+psf_suffixes)
+psfs = np.load(psf_dir+"psfs"+psf_suffixes)
 
-unique_inds = jnp.unique(psf_inds_rolls)
+unique_inds = np.unique(psf_inds_rolls)
 n_unique_inds = len(unique_inds)
 
 winnie_300FM = Winnie_PSF.init(psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, test_parangs, n_unique_inds)
@@ -40,12 +39,12 @@ psf_dir = "for_mihir_20241218/F360M/"
 psf_suffixes = "_F360M.npy"
 
 #Read in the pre-generated PSFs
-im_mask_rolls = jnp.load(psf_dir+"im_mask_rolls"+psf_suffixes)
-psf_inds_rolls = jnp.load(psf_dir+"psf_inds_rolls"+psf_suffixes)
-psf_offsets = jnp.load(psf_dir+"psf_offsets"+psf_suffixes)
-psfs = jnp.load(psf_dir+"psfs"+psf_suffixes)
+im_mask_rolls = np.load(psf_dir+"im_mask_rolls"+psf_suffixes)
+psf_inds_rolls = np.load(psf_dir+"psf_inds_rolls"+psf_suffixes)
+psf_offsets = np.load(psf_dir+"psf_offsets"+psf_suffixes)
+psfs = np.load(psf_dir+"psfs"+psf_suffixes)
 
-unique_inds = jnp.unique(psf_inds_rolls)
+unique_inds = np.unique(psf_inds_rolls)
 n_unique_inds = len(unique_inds)
 
 winnie_360FM = Winnie_PSF.init(psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, test_parangs, n_unique_inds)
@@ -57,7 +56,7 @@ def get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center
     spf_params = DoubleHenyeyGreenstein_SPF.params
     misc_params = Parameter_Index.misc_params
 
-    test_parangs = jnp.array([parang1, parang2, parang3, parang4])
+    test_parangs = np.array([parang1, parang2, parang3, parang4])
     
     psf_params = None
     
