@@ -129,8 +129,8 @@ def generate_image(request):
         if image_array.dtype == np.float32 or image_array.dtype == np.float64:
             image_array = (255 * (image_array - image_array.min()) / (image_array.max() - image_array.min())).astype(np.uint8)
 
-        normalized_img = (image_array - image_array.min()) / (image_array.max() - image_array.min())
-        inferno_colormap = cm.inferno(normalized_img)
+        scaled_img = image_array / image_array.max()
+        inferno_colormap = cm.inferno(scaled_img)
 
         # Convert to 8-bit RGB (Matplotlib returns floats, so scale to 255)
         inferno_rgb = (inferno_colormap[:, :, :3] * 255).astype(np.uint8)
