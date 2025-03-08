@@ -108,7 +108,7 @@ def generate_image(request):
         alpha_in = float(data.get("alpha_in", 5))
         alpha_out = float(data.get("alpha_out", -5))
         sma = float(data.get("sma", 50))
-        e = float(data.get("e", 0.0))
+        e = float(data.get("eccentricity", 0.0))
         inclination = float(data.get("inclination", 0))
         position_angle = float(data.get("position_angle", 0))
         x_center = float(data.get("x_center", 70.0))
