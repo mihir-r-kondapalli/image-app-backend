@@ -162,24 +162,6 @@ class DoubleHenyeyGreenstein_SPF(Jax_class):
         
         return hg1+hg2
     
-    @classmethod
-    def compute_phase_function_from_cosphi(cls, spline_model, cos_phi):
-        """
-        Compute the phase function at (a) specific scattering scattering
-        angle(s) phi. The argument is not phi but cos(phi) for optimization
-        reasons.
-
-        Parameters
-        ----------
-        spline_model : InterpolatedUnivariateSpline
-            spline model to represent scattering light phase function
-        cos_phi : float or array
-            cosine of the scattering angle(s) at which the scattering function
-            must be calculated.
-        """
-        
-        return spline_model(cos_phi)
-    
 
 class GAUSSIAN_PSF(Jax_class):
 
@@ -229,8 +211,8 @@ class EMP_PSF(Jax_class):
 class Winnie_PSF(Jax_class):
 
     @classmethod
-    def init(cls, psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, psf_parangs, num_unique_psfs):
-        return WinniePSF(psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, psf_parangs, num_unique_psfs)
+    def init(cls, psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, psf_parangs, num_unique_parangs):
+        return WinniePSF(psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, psf_parangs)
 
     @classmethod
     def pack_pars(cls, winnie_model):

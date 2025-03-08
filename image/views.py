@@ -51,12 +51,12 @@ winnie_360FM = Winnie_PSF.init(psfs, psf_inds_rolls, im_mask_rolls, psf_offsets,
 
 
 def get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center, y_center, g1, g2, weight, psf,
-              parang1, parang2, parang3, parang4):
+              parang1, parang2, noise):
 
     spf_params = DoubleHenyeyGreenstein_SPF.params
     misc_params = Parameter_Index.misc_params
 
-    test_parangs = np.array([parang1, parang2, parang3, parang4])
+    test_parangs = np.array([parang1, parang2])
     
     psf_params = None
     
@@ -94,7 +94,10 @@ def get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center
         img = objective_model(disk_params, spf_params, psf_params, misc_params,
                                 ScatteredLightDisk, DustEllipticalDistribution2PowerLaws, DoubleHenyeyGreenstein_SPF, None)
     
-    return img
+    noise_level = 250
+    fin_img = img + np.random.normal(0, noise_level, img.shape)
+
+    return fin_img
 
 @api_view(['POST'])
 def generate_image(request):
@@ -117,12 +120,11 @@ def generate_image(request):
         psf = data.get("psf", "NONE")
         parang1 = float(data.get("parang1", 0.0))
         parang2 = float(data.get("parang2", 90.0))
-        parang3 = float(data.get("parang3", 180.0))
-        parang4 = float(data.get("parang4", 270.0))
+        noise = float(data.get("noise", 0.0))
 
         # For now, generate a dummy black image (you can modify this logic)
         image_array = np.asanyarray(get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center, y_center, g1, g2,
-                                              weight, psf, parang1, parang2, parang3, parang4))
+                                              weight, psf, parang1, parang2, noise))
         
         if image_array.dtype == np.float32 or image_array.dtype == np.float64:
             image_array = (255 * (image_array - image_array.min()) / (image_array.max() - image_array.min())).astype(np.uint8)
@@ -130,7 +132,7 @@ def generate_image(request):
         normalized_img = (image_array - image_array.min()) / (image_array.max() - image_array.min())
         inferno_colormap = cm.inferno(normalized_img)
 
-        # ✅ Convert to 8-bit RGB (Matplotlib returns floats, so scale to 255)
+        # Convert to 8-bit RGB (Matplotlib returns floats, so scale to 255)
         inferno_rgb = (inferno_colormap[:, :, :3] * 255).astype(np.uint8)
         
         # Convert NumPy array to PIL Image

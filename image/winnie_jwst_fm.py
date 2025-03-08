@@ -105,7 +105,7 @@ def convolve_with_spatial_psfs(im0, psfs, psf_inds, im_mask=None, use_gpu=False)
     if not isNone(im_mask):
         im *= im_mask
 
-    convolution_fn = psf_convolve_gpu if use_gpu else psf_convolve_cpu
+    convolution_fn = psf_convolve_cpu
     
     yi,xi = np.indices(im.shape)
     nonzero = im != 0.
@@ -127,14 +127,6 @@ def convolve_with_spatial_psfs(im0, psfs, psf_inds, im_mask=None, use_gpu=False)
         
     imcon = np.zeros_like(im)
     imcon[y1:y2+1, x1:x2+1] = imcon_crop
-    return imcon
-
-
-def psf_convolve_gpu(im, psf_im):
-    """
-    GPU-based PSF convolution using CuPy's version of scipy.signal's fast fourier transform.
-    """
-    imcon = cp.asnumpy(cp_signal.fftconvolve(cp.array(im), cp.array(psf_im), mode='same'))
     return imcon
 
 
@@ -422,71 +414,6 @@ def rotate_image_cpu(im, angle, cent=None, new_cent=None, cval0=np.nan, prop_thr
     return im_out
 
 
-def rotate_image_gpu(im0, angle, cent=None, new_cent=None, cval0=np.nan, prop_threshold=1e-6):
-    """
-    Rotates im0 by angle "angle" in degrees using GPU operations. Avoids "mixing" exact zero values, which should functionally be treated as nans.
-    If cent is provided, rotates about cent. Otherwise, uses CuPy's version of scipy.ndimage's rotate (which is a bit faster) to rotate about the
-    geometric center.
-    """
-    if angle == 0.:
-        return im0.copy()
-    im = cp.asarray(im0)
-    nans = cp.isnan(im)
-    zeros = im == 0.
-    any_zeros = cp.any(zeros)
-    any_nans = cp.any(nans)
-    geom_cent = (np.array(im.shape[-2:][::-1])-1.)/2.
-    if isNone(cent) or np.all(cent == geom_cent):
-        if any_nans:
-            rot_im = cp_ndimage.rotate(cp.where(nans, 0., im), angle, axes=(-2, -1), reshape=False, cval=cval0)
-        else:
-            rot_im = cp_ndimage.rotate(im, angle, axes=(-2, -1), reshape=False, cval=cval0)
-        if any_zeros:
-            rot_zeros = cp_ndimage.rotate(zeros.astype(float), angle, axes=(-2, -1),  prefilter=False, reshape=False)
-            rot_im = cp.where(rot_zeros>prop_threshold, 0., rot_im)
-        if any_nans:
-            rot_nans = cp_ndimage.rotate(nans.astype(float), angle, axes=(-2, -1),  prefilter=False, reshape=False)
-            rot_im = cp.where(rot_nans>prop_threshold, cp.nan, rot_im)
-    else:
-        if any_nans:
-            rot_im = rotate_about_pos_gpu(cp.where(nans, 0., im), cent, angle, cval=cval0, new_cent=new_cent)
-        else:
-            rot_im = rotate_about_pos_gpu(im, cent, angle, cval=cval0, new_cent=new_cent)
-        if any_zeros:
-            rot_zeros = rotate_about_pos_gpu(zeros.astype(float), cent, angle,  prefilter=False, new_cent=new_cent)
-            rot_im = cp.where(rot_zeros>prop_threshold, 0., rot_im)
-        if any_nans:
-            rot_nans = rotate_about_pos_gpu(nans.astype(float), cent, angle,  prefilter=False, new_cent=new_cent)
-            rot_im = cp.where(rot_nans>prop_threshold, cp.nan, rot_im)
-    return cp.asnumpy(rot_im)
-
-
-def rotate_about_pos_gpu(im, pos, angle, new_cent=None, cval=np.nan, order=3, mode='constant', prefilter=True):
-    ny, nx = im.shape[-2:]
-    nd = cp.ndim(im)
-    xg0, yg0 = cp.meshgrid(cp.arange(nx, dtype=cp.float64), cp.arange(ny, dtype=cp.float64))
-    
-    if not isNone(new_cent):
-        xg0 -= (new_cent[0]-pos[0])
-        yg0 -= (new_cent[1]-pos[1])
-    
-    xg,yg = xy_polar_ang_displacement_gpu(xg0-pos[0], yg0-pos[1], angle)
-    xg += pos[0]
-    yg += pos[1]
-    
-    if nd == 2:
-        im_rot = cp_ndimage.map_coordinates(im, cp.array([yg,xg]), order=order, mode=mode, cval=cval, prefilter=prefilter)
-    else:
-        nI = int(cp.prod(cp.array(im.shape[:-2])))
-        im_reshaped = im.reshape((nI, ny, nx))
-        im_rot = cp.zeros((nI, ny, nx), dtype=im.dtype)
-        for i in range(nI):
-            im_rot[i] = cp_ndimage.map_coordinates(im_reshaped[i], cp.array([yg, xg]), order=order, mode=mode, cval=cval, prefilter=prefilter)
-        im_rot = im_rot.reshape((*im.shape[:-2], ny, nx))
-    xg, yg, xg0, yg0 = free_gpu(xg, yg, xg0, yg0)
-    return im_rot
-
-
 def rotate_about_pos(im, pos, angle, new_cent=None, cval=np.nan, order=3, mode='constant', prefilter=True):
     ny, nx = im.shape[-2:]
     nd = np.ndim(im)
@@ -523,10 +450,7 @@ def rotate_hypercube(hcube, angles, cent=None, new_cent=None, ncores=-2, use_gpu
     
     Using the "new_cent" keyword, the sequence can be simultaneously translated as well to reduce interpolations.
     """
-    if use_gpu:
-        rot_hcube = np.stack([rotate_image_gpu(imcube, angle, cval0=cval0, cent=cent, new_cent=new_cent) for imcube, angle in zip(hcube, angles)])
-    else:
-        rot_hcube = np.stack(Parallel(n_jobs=ncores, prefer='threads')(delayed(rotate_image_cpu)(imcube, angle, cval0=cval0, cent=cent, new_cent=new_cent) for imcube, angle in zip(hcube, angles)))
+    rot_hcube = np.stack(Parallel(n_jobs=ncores, prefer='threads')(delayed(rotate_image_cpu)(imcube, angle, cval0=cval0, cent=cent, new_cent=new_cent) for imcube, angle in zip(hcube, angles)))
     return rot_hcube
 
 
@@ -565,26 +489,6 @@ def xy_polar_ang_displacement(x, y, dtheta):
     return newx,newy
 
 
-def xy_polar_ang_displacement_gpu(x, y, dtheta):
-    r = cp.sqrt(x**2+y**2)
-    theta = cp.rad2deg(cp.arctan2(y,x))
-    new_theta = cp.deg2rad(theta+dtheta)
-    newx,newy = r*cp.cos(new_theta),r*cp.sin(new_theta)
-    return newx,newy
-
-
-def free_gpu(*args):
-    N = len(args)
-    args = list(args)
-    for i in range(N):
-        args[i] = None
-    cp.get_default_memory_pool().free_all_blocks()
-    cp.get_default_pinned_memory_pool().free_all_blocks()
-    if N <= 1:
-        return None
-    return args
-
-
 def isNone(arg):
     """
     Just a quick convenience/shorthand function.
@@ -603,16 +507,3 @@ def mpl_stcen_extent(im, cent=None, pixelscale=None):
     if not isNone(pixelscale):
         extent *= pixelscale
     return extent
-
-try:
-    import cupy as cp
-    from cupyx.scipy import ndimage as cp_ndimage
-    from cupyx.scipy import signal as cp_signal
-    use_gpu = True
-    gpu = cp.cuda.Device(0)
-    print("CuPy succesfully imported. Using GPU where applicable. "
-           "Set use_gpu=False to override this functionality.")
-except ModuleNotFoundError:
-    use_gpu = False
-    print("Could not import CuPy. "
-          "Setting: use_gpu=False (i.e., using CPU operations).")

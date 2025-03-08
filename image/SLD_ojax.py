@@ -171,8 +171,7 @@ class ScatteredLightDisk(Jax_class):
             phase_function = phase_func_cls.compute_phase_function_from_cosphi(phase_func_params, cosphi_vector)
             #image = np.ndarray((disk["ny"], disk["nx"]))
             image = np.where(validPixel_map, rho_vector*phase_function/(d2star_vector + 1e-8), 0)
-            #limage[il, :, :] = image
-            limage = limage.at[il,:,:].set(image)
+            limage[il, :, :] = image
 
         for il in range(1, nbSlices):
             scattered_light_map += (ll[il]-ll[il-1]) * (limage[il-1, :, :] +
