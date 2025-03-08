@@ -94,8 +94,7 @@ def get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center
         img = objective_model(disk_params, spf_params, psf_params, misc_params,
                                 ScatteredLightDisk, DustEllipticalDistribution2PowerLaws, DoubleHenyeyGreenstein_SPF, None)
     
-    noise_level = 250
-    fin_img = img + np.random.normal(0, noise_level, img.shape)
+    fin_img = img + np.random.normal(0, noise, img.shape)
 
     return fin_img
 
