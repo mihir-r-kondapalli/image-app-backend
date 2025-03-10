@@ -1,0 +1,19 @@
+# Ignore image/settings.py
+image/settings.py
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Byte-compiled Python files
+__pycache__/
+*.py[cod]
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.iml
