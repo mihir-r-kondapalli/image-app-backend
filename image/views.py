@@ -15,6 +15,9 @@ from .new_SLD_utils import DoubleHenyeyGreenstein_SPF, DustEllipticalDistributio
 from .new_SLD_utils import EMP_PSF
 from .SLD_ojax import ScatteredLightDisk
 
+
+##############
+# Generating winnie (jwst) psf objects
 x1 = 0
 x2 = 4096
 y1 = 0
@@ -48,7 +51,7 @@ unique_inds = np.unique(psf_inds_rolls)
 n_unique_inds = len(unique_inds)
 
 winnie_360FM = Winnie_PSF.init(psfs, psf_inds_rolls, im_mask_rolls, psf_offsets, test_parangs, n_unique_inds)
-
+###############
 
 def get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center, y_center, g1, g2, weight, psf,
               parang1, parang2, noise):
@@ -121,7 +124,7 @@ def generate_image(request):
         parang2 = float(data.get("parang2", 90.0))
         noise = float(data.get("noise", 0.0))
 
-        # For now, generate a dummy black image (you can modify this logic)
+        # Generates the image based on the given parameters
         image_array = np.asanyarray(get_image(alpha_in, alpha_out, sma, e, inclination, position_angle, x_center, y_center, g1, g2,
                                               weight, psf, parang1, parang2, noise))
         
